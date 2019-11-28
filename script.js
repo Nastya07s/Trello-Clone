@@ -1,5 +1,6 @@
 let noteIdCounter = 8;
 let columnIdCounter = 4;
+let draggedNote = null;
 
 document
     .querySelectorAll('.column')
@@ -21,7 +22,7 @@ document
              </p>`;
 
         document.querySelector('.columns').append(columnElement);
-        
+
         columnProcess(columnElement);
     });
 
@@ -42,7 +43,7 @@ function columnProcess(columnElement) {
         noteProcess(noteElement);
     });
 
-    const headerElement = columnElement.querySelector('.column-header')
+    const headerElement = columnElement.querySelector('.column-header');
     headerElement.addEventListener('dblclick', function (event) {
         headerElement.setAttribute('contenteditable', 'true');
         headerElement.focus();
@@ -61,5 +62,59 @@ function noteProcess(noteElement) {
 
     noteElement.addEventListener('blur', function (event) {
         noteElement.removeAttribute('contenteditable');
-    })
+    });
+    noteElement.addEventListener('dragstart', dragstart_noteHandler);
+    noteElement.addEventListener('dragend', dragend_noteHandler);
+    noteElement.addEventListener('dragenter', dragenter_noteHandler);
+    noteElement.addEventListener('dragover', dragover_noteHandler);
+    noteElement.addEventListener('dragleave', dragleave_noteHandler);
+    noteElement.addEventListener('drop', drop_noteHandler);
 }
+
+function dragstart_noteHandler(event) {
+    draggedNote = this;
+    this.classList.add('dragged');
+
+    // event.stopPropagation();//???
+}
+
+function dragend_noteHandler(event) {
+    
+    draggedNote = null;
+    this.classList.remove('dragged');
+
+    document
+        .querySelectorAll('.note')
+        .forEach(x => x.classList.remove('under')
+        )
+}
+
+function dragenter_noteHandler(event) {
+    if (this === draggedNote) {
+        return;
+    }
+    this.classList.add('under');
+}
+
+function dragover_noteHandler(event) {
+    if (this === draggedNote) {
+        return;
+    }
+    event.preventDefault();
+}
+
+function dragleave_noteHandler(event) {
+    if (this === draggedNote) {
+        return;
+    }
+    this.classList.remove('under');
+}
+
+function drop_noteHandler(event) {
+    if (this === draggedNote) {
+        return;
+    }
+
+    console.log('drop');
+}
+
